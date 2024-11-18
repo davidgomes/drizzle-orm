@@ -1,6 +1,8 @@
 import { boolean, coerce, literal, object, string, TypeOf, undefined, union } from 'zod';
-import { error } from '../views';
+import { error, info } from '../views';
 import { wrapParam } from './common';
+import { execSync } from 'child_process';
+import readline from "readline";
 
 export const postgresCredentials = union([
 	object({
@@ -76,8 +78,18 @@ export const printConfigConnectionIssues = (
 
 	console.log(
 		error(
-			`Either connection "url" or "host", "database" are required for PostgreSQL database connection`,
+			`Either connection "url" or "host", "database" are required for PostgreSQL database connection.`,
 		),
 	);
+	console.log();
+	execSync(
+		'neonctl auth',
+		{stdio: 'inherit'}
+	);
+	console.log(info(`Please insert the following connection string in your drizzle.config.ts file:`));
+	console.log();
+	console.log(`postgresql://neondb_owner:LxEoCXTtfcu@ep-rough-wind-a5x6o10c.us-east-2.aws.neon.tech/neondb?sslmode=require`);
+	console.log();
+
 	process.exit(1);
 };
